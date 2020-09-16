@@ -18,7 +18,6 @@ class MazeReader:
                 az[-1].append("")
         
         for i in range(r):
-            for j in range(c):
                 if (array[i][j]==Square.WALL):
                     az[i][j] = '#'
                 elif (array[i][j]==Square.OPEN):
