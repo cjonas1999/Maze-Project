@@ -7,9 +7,25 @@ class Square(Enum):
 	FINISH = 4
     
 class MazeReader:
-	def __init__():
-        
-        
+	def __init__(self):
+		self.maze = []
+		self.rows = 0
+		self.cols = 0
+		filename = input("Enter maze file name: ")
+
+		f = open(filename, "r")
+
+		for line in f:
+			row = []
+			for ch in line[:-1]:
+				row.append(MazeReader.fromChar(ch))
+			self.maze.append(row)
+			self.rows += 1
+		
+		self.cols = len(self.maze[0])
+
+		f.close()
+
 	def toString(array):
 		az = []
 		for i in range(r):
@@ -30,7 +46,8 @@ class MazeReader:
 				else:
 					raise ValueError
 		return az
-        
+
+	@staticmethod
 	def fromChar(ch):
 		if (ch == '#'):
 			return Square.WALL
