@@ -59,3 +59,7 @@ class MazeReader:
 			return Square.FINISH
 		else:#invalid argument passed
 			raise ValueError
+
+class MazeSolver:
+	def __init__(self, mazereader: MazeReader):
+		self.mazereader = mazereader
