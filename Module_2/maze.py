@@ -17,7 +17,7 @@ class MazeReader:
 
 		for line in f:
 			row = []
-			for ch in line[:-1]:
+			for ch in line.strip():
 				row.append(MazeReader.fromChar(ch))
 			self.maze.append(row)
 			self.rows += 1
