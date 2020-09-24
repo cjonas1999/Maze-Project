@@ -67,7 +67,10 @@ class MazeSolver:
 	def solve(self):
 		#Mark all the vertices as not visited
 		visited = [[False for i in range(self.mazereader.cols)] for j in range(self.mazereader.rows)]
+		previous = [[[None, None] for i in range(self.mazereader.cols)] for j in range(self.mazereader.rows)]
+		path = []
 		queue = []
+		found = False
 
 		#Find start square
 		for i in range(self.mazereader.rows):
@@ -77,7 +80,7 @@ class MazeSolver:
 					visited[i][j] = True
 					break
 
-		while queue:
+		while queue and not found:
 			s = queue.pop(0)
 
 			for offset in [[1, 0], [-1, 0], [0, 1], [0, -1]]:
@@ -87,10 +90,16 @@ class MazeSolver:
 					continue
 
 				if(not visited[newsquare[0]][newsquare[1]] and self.mazereader.maze[newsquare[0]][newsquare[1]] != Square.WALL):
-						if self.mazereader.maze[newsquare[0]][newsquare[1]] == Square.FINISH:
-							return True
-						else:
-							queue.append(newsquare)
-							visited[newsquare[0]][newsquare[1]] = True
+						queue.append(newsquare)
+						visited[newsquare[0]][newsquare[1]] = True
+						previous[newsquare[0]][newsquare[1]] = s
 
-		return False
+						if self.mazereader.maze[newsquare[0]][newsquare[1]] == Square.FINISH:#calculate path
+							curr = newsquare
+							while self.mazereader.maze[curr[0]][curr[1]] != Square.START:
+								path.insert(0, curr)
+								curr = previous[curr[0]][curr[1]]
+							path.insert(0, curr)#insert start position into path
+							found = True
+
+		return path
