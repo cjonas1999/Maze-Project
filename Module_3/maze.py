@@ -5,7 +5,7 @@ class Square(Enum):
 	OPEN = 2
 	START = 3
 	FINISH = 4
-    
+	
 class MazeReader:
 	def __init__(self):
 		self.maze = []
