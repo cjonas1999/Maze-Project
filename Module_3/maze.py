@@ -1,4 +1,6 @@
 from enum import Enum
+from tkinter import *
+import tkinter.simpledialog
 
 class Square(Enum):
 	WALL = 1
@@ -7,11 +9,10 @@ class Square(Enum):
 	FINISH = 4
 	
 class MazeReader:
-	def __init__(self):
+	def __init__(self, filename):
 		self.maze = []
 		self.rows = 0
 		self.cols = 0
-		filename = input("Enter maze file name: ")
 
 		f = open(filename, "r")
 
@@ -103,3 +104,24 @@ class MazeSolver:
 							found = True
 
 		return path
+
+
+
+class MazeApp():
+	def __init__(self):
+		self.window = Tk()
+		self.loadButton = Button(self.window, text="Load", command=self.loadButtonFunc)
+		self.loadButton.pack()
+		self.solveButton = Button(self.window, text="Solve", state=DISABLED, command=self.solveButtonFunc)
+		self.solveButton.pack()
+		self.window.mainloop()
+	
+	def loadButtonFunc(self):
+		filename = tkinter.simpledialog.askstring(title="Test", prompt="Enter filename:")
+		self.mr = MazeReader(filename)
+		print(filename)
+		self.solveButton.config(state = NORMAL)
+
+	def solveButtonFunc(self):
+		self.ms = MazeSolver(self.mr)
+		self.ms.solve()
