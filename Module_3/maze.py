@@ -85,7 +85,9 @@ class MazeSolver:
 	def __init__(self, mazereader: MazeReader):
 		self.mazereader = mazereader
 	
-	def solve(self, window, canvas, stepButton, autoButton):
+	def solve(self, window, canvas, stepButton, autoButton, textBox):
+		textBox.delete("1.0", END)
+		textBox.insert(END, "Solution in progress")
 		#Mark all the vertices as not visited
 		self.visited = [[False for i in range(self.mazereader.cols)] for j in range(self.mazereader.rows)]
 		self.previous = [[[None, None] for i in range(self.mazereader.cols)] for j in range(self.mazereader.rows)]
@@ -111,15 +113,11 @@ class MazeSolver:
 		stepButton.configure(command=lambda: (self.step.set(self.step.get()+1), self.auto.set(False)))
 		autoButton.configure(command=lambda: (self.step.set(-1), self.auto.set(not self.auto.get())))
 
-		if self.step.get() < 0:
-			self.solveStep(window, canvas)
-		else:
-			window.wait_variable(self.step)
-			self.solveStep(window, canvas)
+		self.solveStep(window, canvas, textBox)
 
 		
 
-	def solveStep(self, window, canvas):
+	def solveStep(self, window, canvas, textBox):
 		if self.queue and not self.found:
 			s = self.queue.pop(0)
 
@@ -143,14 +141,19 @@ class MazeSolver:
 								curr = self.previous[curr[0]][curr[1]]
 							self.path.insert(0, curr)#insert start position into path
 							self.found = True
+							textBox.delete("1.0", END)
+							s = "Solution reachable at "+str(newsquare[0])+","+str(newsquare[1])+" in "+str(len(self.path))+" moves"
+							textBox.insert(END, s)
 			
 			if self.auto.get():
-				window.after(500, self.solveStep, window, canvas)
+				window.after(500, self.solveStep, window, canvas, textBox)
 			else:
 				window.wait_variable(self.step)
-				self.solveStep(window, canvas)
+				self.solveStep(window, canvas, textBox)
 		else:
 			self.found = True
+			textBox.delete("1.0", END)
+			textBox.insert(END, "Finish not reachable")
 
 
 
@@ -158,6 +161,10 @@ class MazeApp():
 	def __init__(self):
 		self.window = Tk()
 		self.canvas = Canvas(self.window, height=500, width=500)
+
+		self.textBox = Text(self.window, height=1, width=50)
+		self.textBox.insert(END, "No maze")
+		self.textBox.pack()
 
 		self.loadButton = Button(self.window, text="Load", command=self.loadButtonFunc)
 		self.loadButton.pack()
@@ -178,6 +185,8 @@ class MazeApp():
 		filename = tkinter.simpledialog.askstring(title="Test", prompt="Enter filename:")
 		self.canvas.delete("all")
 		self.mr = MazeReader(filename, self.window, self.canvas)
+		self.textBox.delete("1.0", END)
+		self.textBox.insert(END, "Maze loaded")
 		self.canvas.pack()
 		self.solveButton.config(state = NORMAL)
 
@@ -185,4 +194,4 @@ class MazeApp():
 		self.ms = MazeSolver(self.mr)
 		self.stepButton.config(state = NORMAL)
 		self.autoButton.config(state = NORMAL)
-		self.ms.solve(self.window, self.canvas, self.stepButton, self.autoButton)
+		self.ms.solve(self.window, self.canvas, self.stepButton, self.autoButton, self.textBox)
