@@ -103,22 +103,23 @@ class MazeSolver:
 
 
 		#Create step and auto buttons
-		step = IntVar()
-		step.set(0)
+		self.step = IntVar()
+		self.step.set(0)
+		self.auto = BooleanVar()
+		self.auto.set
 
-		stepButton.configure(command=lambda:step.set(step.get()+1))
-		autoButton.configure(command=lambda: step.set(-1))
+		stepButton.configure(command=lambda: (self.step.set(self.step.get()+1), self.auto.set(False)))
+		autoButton.configure(command=lambda: (self.step.set(-1), self.auto.set(not self.auto.get())))
 
-		while not self.found:
-			if step.get() < 0:
-				window.after(500, self.solveStep(canvas))
-			else:
-				window.wait_variable(step)
-				self.solveStep(canvas)
+		if self.step.get() < 0:
+			self.solveStep(window, canvas)
+		else:
+			window.wait_variable(self.step)
+			self.solveStep(window, canvas)
 
 		
 
-	def solveStep(self, canvas):
+	def solveStep(self, window, canvas):
 		if self.queue and not self.found:
 			s = self.queue.pop(0)
 
@@ -142,6 +143,12 @@ class MazeSolver:
 								curr = self.previous[curr[0]][curr[1]]
 							self.path.insert(0, curr)#insert start position into path
 							self.found = True
+			
+			if self.auto.get():
+				window.after(500, self.solveStep, window, canvas)
+			else:
+				window.wait_variable(self.step)
+				self.solveStep(window, canvas)
 		else:
 			self.found = True
 
